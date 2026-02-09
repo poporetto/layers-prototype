@@ -1,0 +1,736 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Weather Mapping Application</title>
+    <link rel="stylesheet" href="reset.css" />
+    <link rel="stylesheet" href="style.css" />
+    <link href="https://cdnres.willyweather.com.au/images/icons/apple-touch-icon-180.png" sizes="180x180" rel="apple-touch-icon-precomposed" />
+    <link href="https://cdnres.willyweather.com.au/images/icons/favicon.ico" rel="icon" />
+    <link rel="stylesheet" href="https://unpkg.com/tippy.js@6/dist/tippy.css" />
+    <!-- Tippy Script -->
+    <script src="https://unpkg.com/@popperjs/core@2"></script>
+    <script src="https://unpkg.com/tippy.js@6"></script>
+    <style>
+      .map {
+        background: url('images/map-sample.jpg') no-repeat center center / cover;
+      }
+    </style>
+  </head>
+  <body>
+    <main class="map">
+      <!-- ================================== Layer Sidebar ================================== -->
+      <div data-sidebar-backdrop class="sidebar-backdrop"></div>
+      <aside data-sidebar class="sidebar">
+        <div class="sidebar__inner">
+          <button data-sidebar-close class="sidebar__toggle">
+            <svg xmlns="http://www.w3.org/2000/svg" width="8" height="8" fill="none" viewBox="0 0 8 8">
+              <path
+                fill="#222"
+                d="m.158 6.55 2.813-2.812L.18.95a.513.513 0 0 1 0-.773.513.513 0 0 1 .774 0l2.813 2.789L6.557.175a.513.513 0 0 1 .773 0c.234.212.234.563 0 .798L4.541 3.762l2.79 2.789c.233.21.233.562 0 .797-.212.21-.563.21-.798 0L3.744 4.535.955 7.325c-.21.234-.562.234-.797 0a.55.55 0 0 1 0-.774"
+              />
+            </svg>
+            Close
+            <svg class="sidebar__toggle-icon" xmlns="http://www.w3.org/2000/svg" width="7" height="11" fill="none">
+              <path fill="#222" d="M5.783 4.729a.723.723 0 0 1 0 1.054l-4.5 4.5a.723.723 0 0 1-1.054 0 .723.723 0 0 1 0-1.054l3.96-3.985-3.96-3.96a.723.723 0 0 1 0-1.055.723.723 0 0 1 1.054 0l4.5 4.5Z" />
+            </svg>
+          </button>
+          <div class="segmented-control sidebar__control">
+            <input type="radio" name="forecast-observations" id="forecast" checked />
+            <label for="forecast">Forecast</label>
+            <input type="radio" name="forecast-observations" id="observations" />
+            <label for="observations">Observations</label>
+          </div>
+
+          <ul data-list-forecast class="sidebar__layer-list">
+            <li class="sidebar__layer-item" data-list-item>
+              <div class="sidebar__layer-inner">
+                <input type="checkbox" class="sidebar__layer-item-checkbox" checked />
+                <img src="images/layer-thumbnail-sample.jpg" alt="" class="sidebar__layer-thumbnail" />
+                <div class="sidebar__layer-item-text">Temperature</div>
+                <a href="#" data-layer-expand class="sidebar__layer-item-toggle">
+                  <img src="images/icon-chevron-down.svg" alt="chevron right icon" />
+                </a>
+              </div>
+              <ul class="sidebar__layer-item-sub-list">
+                <li class="sidebar__layer-item-sub-item">
+                  <input type="checkbox" class="sidebar__layer-item-checkbox" />
+                  <img src="images/layer-thumbnail-temperature.jpg" alt="" class="sidebar__layer-thumbnail" />
+                  <div class="sidebar__layer-item-text">Temperature</div>
+                </li>
+                <li class="sidebar__layer-item-sub-item">
+                  <input type="checkbox" class="sidebar__layer-item-checkbox" />
+                  <img src="images/layer-thumbnail-sample.jpg" alt="" class="sidebar__layer-thumbnail" />
+                  <div class="sidebar__layer-item-text">Apparent Temperature</div>
+                </li>
+                <li class="sidebar__layer-item-sub-item">
+                  <input type="checkbox" class="sidebar__layer-item-checkbox" />
+                  <img src="images/layer-thumbnail-sample.jpg" alt="" class="sidebar__layer-thumbnail" />
+                  <div class="sidebar__layer-item-text">Dew Point</div>
+                </li>
+              </ul>
+            </li>
+            <li class="sidebar__layer-item" data-list-item>
+              <div class="sidebar__layer-inner">
+                <input type="checkbox" class="sidebar__layer-item-checkbox" />
+                <img src="images/layer-thumbnail-wind.jpg" alt="" class="sidebar__layer-thumbnail" />
+                <div class="sidebar__layer-item-text">Wind</div>
+                <a href="#" data-layer-expand class="sidebar__layer-item-toggle">
+                  <img src="images/icon-chevron-down.svg" alt="chevron right icon" />
+                </a>
+              </div>
+            </li>
+            <li class="sidebar__layer-item" data-list-item>
+              <div class="sidebar__layer-inner">
+                <input type="checkbox" class="sidebar__layer-item-checkbox" />
+                <img src="images/layer-thumbnail-sample.jpg" alt="" class="sidebar__layer-thumbnail" />
+                <div class="sidebar__layer-item-text">Swell</div>
+              </div>
+            </li>
+            <!-- ============== Storm Tracker =============== -->
+            <li class="sidebar__layer-item is-expanded" data-list-item>
+              <div class="sidebar__layer-inner">
+                <input type="checkbox" class="sidebar__layer-item-checkbox" checked />
+                <img src="images/layer-thumbnail-storm-tracker.jpg" alt="" class="sidebar__layer-thumbnail" />
+                <div class="sidebar__layer-item-text">Storm tracker</div>
+                <a href="#" data-layer-expand class="sidebar__layer-item-toggle">
+                  <img src="images/icon-chevron-down.svg" alt="chevron right icon" />
+                </a>
+              </div>
+              <ul class="sidebar-storm__list">
+                <li class="sidebar-storm">
+                  <div class="sidebar-storm__label">Hurricane</div>
+                  <div class="sidebar-storm__row">
+                    <h3 class="sidebar-storm__name">Katrina <label class="sidebar-storm__category sidebar-storm__category--5">Cat 5</label></h3>
+                    <div class="sidebar-storm__location"><img src="images/icon-location-small.svg" alt="location icon" /> Gulf of Mexico</div>
+                  </div>
+                  <div class="sidebar-storm__row">
+                    <div class="sidebar-storm__speed"><img src="images/icon-wind-small.svg" alt="Wind icon" /> 202 km/h</div>
+                    <label class="sidebar-storm__category">Cat 5</label>
+                    <div class="sidebar-storm__distance">~5,800 km away</div>
+                  </div>
+                </li>
+                <li class="sidebar-storm">
+                  <div class="sidebar-storm__label">Hurricane</div>
+                  <div class="sidebar-storm__row">
+                    <h3 class="sidebar-storm__name">Katrina <label class="sidebar-storm__category sidebar-storm__category--4">Cat 5</label></h3>
+                    <div class="sidebar-storm__location"><img src="images/icon-location-small.svg" alt="location icon" /> Gulf of Mexico</div>
+                  </div>
+                  <div class="sidebar-storm__row">
+                    <div class="sidebar-storm__speed"><img src="images/icon-wind-small.svg" alt="Wind icon" /> 202 km/h</div>
+                    <label class="sidebar-storm__category">Cat 5</label>
+                    <div class="sidebar-storm__distance">~5,800 km away</div>
+                  </div>
+                </li>
+                <li class="sidebar-storm">
+                  <div class="sidebar-storm__label">Hurricane</div>
+                  <div class="sidebar-storm__row">
+                    <h3 class="sidebar-storm__name">Katrina <label class="sidebar-storm__category sidebar-storm__category--3">Cat 3</label></h3>
+                    <div class="sidebar-storm__location"><img src="images/icon-location-small.svg" alt="location icon" /> Gulf of Mexico</div>
+                  </div>
+                  <div class="sidebar-storm__row">
+                    <div class="sidebar-storm__speed"><img src="images/icon-wind-small.svg" alt="Wind icon" /> 202 km/h</div>
+                    <label class="sidebar-storm__category">Cat 5</label>
+                    <div class="sidebar-storm__distance">~5,800 km away</div>
+                  </div>
+                </li>
+                <li class="sidebar-storm">
+                  <div class="sidebar-storm__label">Hurricane</div>
+                  <div class="sidebar-storm__row">
+                    <h3 class="sidebar-storm__name">Katrina <label class="sidebar-storm__category sidebar-storm__category--2">Cat 2</label></h3>
+                    <div class="sidebar-storm__location">
+                      <img src="images/icon-location-small.svg" alt="location icon" />
+                      <div class="sidebar-storm__location-name">super long location name please try to fix it</div>
+                    </div>
+                  </div>
+                  <div class="sidebar-storm__row">
+                    <div class="sidebar-storm__speed"><img src="images/icon-wind-small.svg" alt="Wind icon" /> 202 km/h</div>
+                    <label class="sidebar-storm__category">Cat 5</label>
+                    <div class="sidebar-storm__distance">~5,800 km away</div>
+                  </div>
+                </li>
+                <li class="sidebar-storm">
+                  <div class="sidebar-storm__label">Hurricane</div>
+                  <div class="sidebar-storm__row">
+                    <h3 class="sidebar-storm__name">Katrina <label class="sidebar-storm__category sidebar-storm__category--1">Cat 1</label></h3>
+                    <div class="sidebar-storm__location"><img src="images/icon-location-small.svg" alt="location icon" /> Gulf of Mexico</div>
+                  </div>
+                  <div class="sidebar-storm__row">
+                    <div class="sidebar-storm__speed"><img src="images/icon-wind-small.svg" alt="Wind icon" /> 202 km/h</div>
+                    <label class="sidebar-storm__category">Cat 5</label>
+                    <div class="sidebar-storm__distance">~5,800 km away</div>
+                  </div>
+                </li>
+                <!-- ============== End of Storm Tracker =============== -->
+              </ul>
+            </li>
+          </ul>
+
+          <ul data-list-observation class="sidebar__layer-list">
+            <li>coming soon</li>
+          </ul>
+
+          <h4 class="sidebar__title">Combinations</h4>
+          <ul class="sidebar__layer-list">
+            <li class="sidebar__layer-item" data-list-item>
+              <div class="sidebar__layer-inner">
+                <input type="checkbox" class="sidebar__layer-item-checkbox" checked />
+                <img src="images/layer-thumbnail-sample.jpg" alt="" class="sidebar__layer-thumbnail" />
+                <div class="sidebar__layer-item-text">
+                  Satellite + Radar + Lightning
+                  <span class="premium-label"> WillyWeather+ </span>
+                </div>
+              </div>
+            </li>
+          </ul>
+          <a href="" class="sidebar__back-link"> <img src="images/icon-arrow-left.svg" alt="left arrow icon" /> Go Back to Bondi Junction </a>
+        </div>
+      </aside>
+
+      <!-- ================================== Quick Access Sidebar ================================== -->
+
+      <aside class="layer-quick-menu">
+        <button data-sidebar-toggle class="layer-quick-menu__toggle">
+          <img src="images/icon-layer-group.svg" alt="layer icon" />
+          Menu
+          <svg xmlns="http://www.w3.org/2000/svg" width="7" height="11" fill="none"><path fill="#222" d="M5.783 4.729a.723.723 0 0 1 0 1.054l-4.5 4.5a.723.723 0 0 1-1.054 0 .723.723 0 0 1 0-1.054l3.96-3.985-3.96-3.96a.723.723 0 0 1 0-1.055.723.723 0 0 1 1.054 0l4.5 4.5Z" /></svg>
+        </button>
+
+        <div class="layer-quick-menu-button">
+          <input type="radio" name="quick-menu" id="satellite-radar-lightning-layer" class="layer-quick-menu-button__checkbox" />
+          <label for="satellite-radar-lightning-layer" class="layer-quick-menu-button__thumbnail">
+            <span class="layer-quick-menu-button__text"> Satellite + Radar + Lightning </span>
+            <img class="layer-quick-menu-button__image" src="images/layer-thumbnail-sample.jpg" alt="thumbnail" />
+          </label>
+        </div>
+        <div class="layer-quick-menu-button">
+          <input type="radio" name="quick-menu" id="wind-layer" class="layer-quick-menu-button__checkbox" />
+          <label for="wind-layer" class="layer-quick-menu-button__thumbnail">
+            <span class="layer-quick-menu-button__text"> Wind </span>
+            <img class="layer-quick-menu-button__image" src="images/layer-thumbnail-wind.jpg" alt="thumbnail" />
+          </label>
+        </div>
+        <div class="layer-quick-menu-button">
+          <input type="radio" name="quick-menu" id="rainfall-layer" class="layer-quick-menu-button__checkbox" />
+          <label for="rainfall-layer" class="layer-quick-menu-button__thumbnail">
+            <span class="layer-quick-menu-button__text"> Rainfall </span>
+            <img class="layer-quick-menu-button__image" src="images/layer-thumbnail-rainfall.jpg" alt="thumbnail" />
+          </label>
+        </div>
+        <div class="layer-quick-menu-button">
+          <input type="radio" name="quick-menu" id="swell-layer" class="layer-quick-menu-button__checkbox" />
+          <label for="swell-layer" class="layer-quick-menu-button__thumbnail">
+            <span class="layer-quick-menu-button__text"> Swell </span>
+            <img class="layer-quick-menu-button__image" src="images/layer-thumbnail-swell.jpg" alt="thumbnail" />
+          </label>
+        </div>
+      </aside>
+
+      <img src="images/logo.svg" alt="" class="map__logo" />
+
+      <!-- ================================== Toolbar ================================== -->
+      <div class="toolbar-wrapper">
+        <ul class="toolbar">
+          <li class="toolbar__item">
+            <button class="toolbar__button" title="Information">
+              <img src="images/icon-info.svg" alt="layer icon" />
+            </button>
+          </li>
+          <li class="toolbar__item">
+            <button class="toolbar__button" title="Reset direction">
+              <img src="images/icon-compass.svg" alt="compass icon" />
+            </button>
+          </li>
+          <li class="toolbar__item">
+            <button class="toolbar__button" title="Layer opacity">
+              <img src="images/icon-layer.svg" alt="layer icon" />
+            </button>
+          </li>
+          <li class="toolbar__item">
+            <button class="toolbar__button" title="Embed code">
+              <img src="images/icon-code.svg" alt="Code icon" />
+            </button>
+          </li>
+          <li class="toolbar__item">
+            <button class="toolbar__button" title="Share map link">
+              <img src="images/icon-share.svg" alt="Share icon" />
+            </button>
+          </li>
+          <li class="toolbar__item">
+            <button class="toolbar__button" title="Share map link">
+              <img src="images/icon-data.svg" alt="Data icon" />
+            </button>
+          </li>
+        </ul>
+
+        <div class="zoom-toolbar is-hidden-mobile">
+          <button class="zoom-toolbar__button">
+            <img src="images/icon-zoom-plus.svg" alt="Zoom plus icon" />
+          </button>
+          <button class="zoom-toolbar__button">
+            <img src="images/icon-zoom-minus.svg" alt="Zoom minus icon" />
+          </button>
+        </div>
+      </div>
+
+      <!-- ================================== Mobile sidebar ================================== -->
+      <button class="mobile-panels__toggle" data-open-mobile-panels>
+        <img src="images/icon-menu.svg" alt="menu icon" />
+        Settings
+      </button>
+      <div data-mobile-panels class="mobile-panels">
+        <button class="mobile-panels__close" data-close-mobile-panels>&times; Close</button>
+
+        <!-- ================================== Data Source Panel - Changed to Layer settings panel - ================================== -->
+
+        <aside class="layer-settings-panel" aria-labelledby="layer-settings-title">
+          <button data-toolbar-information class="layer-settings-info__toggle">
+            <img src="images/icon-info.svg" alt="layer icon" />
+            Info
+            <svg xmlns="http://www.w3.org/2000/svg" width="7" height="11" fill="none" viewBox="0 0 7 11"><path fill="#222" d="M.229 5.783a.723.723 0 0 1 0-1.054l4.5-4.5a.723.723 0 0 1 1.054 0 .723.723 0 0 1 0 1.054l-3.96 3.985 3.96 3.96a.723.723 0 0 1 0 1.055.723.723 0 0 1-1.054 0z" /></svg>
+          </button>
+
+          <div class="tab">
+            <input type="radio" name="layer-settings" id="layer-primary" checked="" />
+            <label for="layer-primary">Radar</label>
+            <input type="radio" name="layer-settings" id="layer-secondary" />
+            <label for="layer-secondary">Lightning</label>
+            <input type="radio" name="layer-settings" id="layer-tertiary" />
+            <label for="layer-tertiary">Swell</label>
+          </div>
+
+          <!--           <h4 id="layer-settings-title" class="layer-settings-panel__title">
+            Layer Settings
+            <select name="layer-provider" id="layer-provider">
+              <option value="noaa">Wind</option>
+              <option value="ecmwf">Pressure</option>
+            </select>
+          </h4> -->
+          <ul class="layer-settings-panel__list">
+            <li class="layer-settings-panel__item">
+              <label for="layer-provider">Provider</label>
+              <select name="layer-provider" id="layer-provider">
+                <option value="noaa">NOAA</option>
+                <option value="ecmwf">ECMWF</option>
+                <option value="meteo">Meteo</option>
+              </select>
+            </li>
+            <li class="layer-settings-panel__item">
+              <label for="layer-model">Model</label>
+              <select name="layer-model" id="layer-model">
+                <option value="gfs">GFS</option>
+                <option value="icon">ICON</option>
+              </select>
+            </li>
+            <li class="layer-settings-panel__item">
+              <label for="layer-visual">Visual</label>
+              <select name="layer-visual" id="layer-visual">
+                <option value="particles">Particles</option>
+                <option value="contours">Arrows</option>
+              </select>
+            </li>
+          </ul>
+        </aside>
+      </div>
+      <!-- ================================== End of mobile sidebar ================================== -->
+
+      <!-- ================================== Legend panel ================================== -->
+      <aside class="legend-panel">
+        <div class="sidebar-storm legend-panel__sidebar-storm">
+          <div class="sidebar-storm__row">
+            <h3 class="sidebar-storm__name">Katrina <label class="sidebar-storm__category sidebar-storm__category--5">Cat 5</label></h3>
+            <div class="sidebar-storm__location"><img src="images/icon-location-small.svg" alt="location icon" /> Gulf of Mexico</div>
+          </div>
+          <div class="sidebar-storm__row">
+            <div class="sidebar-storm__speed"><img src="images/icon-wind-small.svg" alt="Wind icon" /> 202 km/h</div>
+            <label class="sidebar-storm__category">Cat 5</label>
+            <div class="sidebar-storm__distance">~5,800 km away</div>
+          </div>
+        </div>
+
+        <h6 class="legend-panel__title">Click to change measurement</h6>
+        <div class="legend-panel__inner">
+          <div class="legend-panel__key-wrapper">
+            <ul class="legend-panel__key-list">
+              <li class="legend-panel__key-item" style="background: #eeeeee"></li>
+              <li class="legend-panel__key-item" style="background: #d2ed5d"></li>
+              <li class="legend-panel__key-item" style="background: #4cab1e"></li>
+              <li class="legend-panel__key-item" style="background: #489ba4"></li>
+              <li class="legend-panel__key-item" style="background: #26c2f0"></li>
+              <li class="legend-panel__key-item" style="background: #2598e8"></li>
+              <li class="legend-panel__key-item" style="background: #296ee1"></li>
+              <li class="legend-panel__key-item" style="background: #1e52a8"></li>
+              <li class="legend-panel__key-item" style="background: #fa872a"></li>
+              <li class="legend-panel__key-item" style="background: #fa5e30"></li>
+              <li class="legend-panel__key-item" style="background: #fc363b"></li>
+              <li class="legend-panel__key-item" style="background: #bd292c"></li>
+            </ul>
+            <div class="tooltip">19.8 - 22.9 km/h</div>
+            <div class="legend-panel__key-value">
+              <span class="legend-panel__lowest-value"> <1 </span>
+              <span class="legend-panel__middle-value"> 38.9–50</span>
+              <span class="legend-panel__highest-value"> 117.7</span>
+            </div>
+          </div>
+          <div class="legend-panel__measurement-unit">km/h</div>
+        </div>
+      </aside>
+
+      <form class="map-slider">
+        <time class="hint" data-days="d" data-day="d" data-hrs="h" data-hr="h" data-mins="m" data-min="m" data-past=" ago" data-future="" style="margin-left: -43.5px">4:00 pm (3d 18h)</time>
+
+        <a class="button slider-toggle controller toggle-pause" data-hint="Pause" data-play="Pause" data-pause="Play">
+          <img class="slider-toggle__play-icon" src="images/icon-play.svg" alt="play icon" />
+          <img class="slider-toggle__pause-icon" src="images/icon-pause.svg" alt="pause icon" />
+        </a>
+        <a class="button slider-toggle controller toggle-pause" data-hint="add time">
+          <img src="images/icon-circle-plus.svg" alt="plus icon" />
+        </a>
+        <div class="slider-track">
+          <ul class="slider-days">
+            <li class="slider-day slider-today" style="width: 100%">
+              <time data-start="1753020000000" data-end="1753106400000">Today</time>
+            </li>
+          </ul>
+
+          <section class="slider-overlays">
+            <span style="left: 0%; width: 100%; height: 100%" data-id="0">
+              <b style="left: 0%" data-timestamp="1753063800000"></b>
+              <b style="left: 18.75%" data-timestamp="1753064400000"></b>
+              <b style="left: 65.625%" data-timestamp="1753065900000"></b>
+              <b style="left: 75%" data-timestamp="1753066200000" class="active"></b>
+            </span>
+          </section>
+
+          <span class="slider-current" style="overflow: hidden; width: 98.25%">
+            <i class="slider-handle">
+              <time class="hint" data-days="d" data-day="d" data-hrs="h" data-hr="h" data-mins="m" data-min="m" data-past=" ago" data-future="" style="margin-left: auto; right: auto; left: -6px">14:00 pm (3d 18h)</time>
+            </i>
+          </span>
+
+          <span class="slider-range">
+            <span class="slider-exclusion slider-exclusion-left" style="width: 50.6942%"></span>
+            <span class="slider-exclusion slider-exclusion-right" style="width: 45.6013%"></span>
+            <i class="slider-pincer slider-pincer-right" style="left: 54.3988%"></i>
+            <i class="slider-pincer slider-pincer-left" style="left: 50.695%"></i>
+          </span>
+        </div>
+      </form>
+    </main>
+
+    <aside class="map-point" role="dialog" aria-label="map data point for selected location">
+      <div class="map-point__body">
+        <button class="map-point__close" type="button" aria-label="Close data popup">
+          <svg xmlns="http://www.w3.org/2000/svg" width="8" height="8" fill="none" viewBox="0 0 8 8">
+            <path
+              fill="#FFF"
+              d="m.158 6.55 2.813-2.812L.18.95a.513.513 0 0 1 0-.773.513.513 0 0 1 .774 0l2.813 2.789L6.557.175a.513.513 0 0 1 .773 0c.234.212.234.563 0 .798L4.541 3.762l2.79 2.789c.233.21.233.562 0 .797-.212.21-.563.21-.798 0L3.744 4.535.955 7.325c-.21.234-.562.234-.797 0a.55.55 0 0 1 0-.774"
+            ></path>
+          </svg>
+        </button>
+        <div class="map-point__row">
+          <h3 class="map-point__label">Wind</h3>
+          <p class="map-point__value">
+            <span class="map-point__number">23</span>
+            <span class="map-point__unit">km/h</span>
+            <span class="map-point__direction" aria-label="from southeast"> <img class="direction-arrow" src="images/direction-arrow.svg" alt="direction arrow" /> SE </span>
+          </p>
+        </div>
+        <div class="map-point__row">
+          <h3 class="map-point__label">Swell</h3>
+          <div class="map-point__value">
+            <span class="map-point__number">1.3</span>
+            <span class="map-point__unit">m</span>
+            <span class="map-point__direction" aria-label="from southeast"> <img class="direction-arrow" style="transform: rotate(45deg)" src="images/direction-arrow.svg" alt="direction arrow" /> SE </span>
+            <p class="map-point__meta">10s period</p>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <aside class="loading-overlay is-hidden" aria-modal="true" role="alertdialog" aria-label="Loading">
+      <div class="loading-backdrop"></div>
+      <section class="loading-content">
+        <!-- Animated SVG Loader goes here -->
+        <svg xmlns="http://www.w3.org/2000/svg" width="44" height="36">
+          <defs>
+            <linearGradient id="swirlGradient" x1="0%" x2="100%" y1="0%" y2="100%">
+              <stop offset="0%" stop-color="#2196f3"><animate attributeName="stop-color" dur="4s" repeatCount="indefinite" values="#2196f3;#ffffff;#2196f3" /></stop>
+              <stop offset="100%" stop-color="#2196f3"><animate attributeName="stop-color" dur="4s" repeatCount="indefinite" values="#2196f3;#ffffff;#2196f3" /></stop>
+            </linearGradient>
+          </defs>
+          <path
+            fill="url(#swirlGradient)"
+            d="M20.888 8.179c9.368-1.838 17.46-.259 18.075 3.527.348 2.147-1.785 4.541-5.406 6.548.296.53.426 1.297.333 2.32-.243 2.655-2.834 5.765-10.38 6.642-2.604.303-5.067.298-7.188.039.407 1.751 2.194 2.83 5.113 2.562 2.09-.192 3.903-.85 4.99-1.71.546 1.498-2.203 3.554-4.933 3.594-1.9.028-3.63-.479-4.86-1.337 1.176 3.113 3.961 3.466 5.249 3.6-.102.563-2.288 1.343-4.375-.227-1.676-1.26-1.682-3.04-1.461-3.842-.555-.514-.956-1.117-1.154-1.783-.083-.276-.125-.863-.12-1.104-3.176-.633-5.293-1.913-5.462-3.604-.048-.48.065-.964.318-1.442-2.617-.71-4.32-1.944-4.59-3.602-.614-3.785 6.482-8.344 15.85-10.181Zm9.698 11.494c-2.21.91-4.745 1.679-7.474 2.214-4.46.874-8.63.974-11.842.43-.04.176-.04.358-.047.581-.063 2.151 3.946 3.393 10.364 2.545 6.418-.848 9.52-2.942 9.28-5.078a1.438 1.438 0 0 0-.281-.692Zm3.7-7.188c-.41-1.986-5.812-3.218-13.447-1.36-7.636 1.859-13.494 4.976-13.083 6.962.41 1.986 6.933 2.09 14.568.23 7.635-1.858 12.372-3.845 11.962-5.832Z"
+            style="transform-origin: 50% 90%; animation: bounce 2s cubic-bezier(0.33, 0.66, 0.8, 0.64) infinite"
+          />
+          <style>
+            @keyframes bounce {
+              0%,
+              52%,
+              to {
+                transform: translateY(0) scaleY(1) scaleX(1);
+              }
+              10% {
+                transform: translateY(-8px) scaleY(0.98) scaleX(1.02);
+              }
+              30% {
+                transform: translateY(-10px) scaleY(0.9) scaleX(1.18);
+              }
+              42% {
+                transform: translateY(0) scaleY(1.12) scaleX(0.8);
+              }
+              48% {
+                transform: translateY(-7px) scaleY(0.96) scaleX(1.04);
+              }
+            }
+          </style>
+        </svg>
+        <p class="loading-message" aria-live="polite">Loading, please wait…</p>
+      </section>
+    </aside>
+
+    <div class="alert is-hidden" role="alert">
+      <p>This is an alert message</p>
+      <button type="button" class="alert__close" data-bs-dismiss="alert" aria-label="Close">&times;</button>
+    </div>
+
+    <div class="alert alert--success alert--top-right is-hidden" role="alert">
+      <p>You're back online!</p>
+      <button type="button" class="alert__close" data-bs-dismiss="alert" aria-label="Close">&times;</button>
+    </div>
+
+    <div class="alert alert--warning alert--bottom-center is-hidden" role="alert">
+      <p>Radar coverage isn’t available for this area. Coverage is limited to Australia, the United Kingdom, and the United States</p>
+      <button type="button" class="alert__close" data-bs-dismiss="alert" aria-label="Close">&times;</button>
+    </div>
+
+    <div class="alert alert--danger alert--top-right is-hidden" role="alert">
+      <div>You're offline</div>
+      <button type="button" class="alert__close" data-bs-dismiss="alert" aria-label="Close">&times;</button>
+    </div>
+
+    <aside class="loading-overlay is-hidden" aria-modal="true" role="alertdialog" aria-label="Loading">
+      <div class="loading-backdrop"></div>
+      <section class="loading-content">
+        <!-- Animated SVG Loader goes here -->
+        <svg xmlns="http://www.w3.org/2000/svg" width="44" height="36">
+          <defs>
+            <linearGradient id="swirlGradient" x1="0%" x2="100%" y1="0%" y2="100%">
+              <stop offset="0%" stop-color="#2196f3"><animate attributeName="stop-color" dur="4s" repeatCount="indefinite" values="#2196f3;#ffffff;#2196f3" /></stop>
+              <stop offset="100%" stop-color="#2196f3"><animate attributeName="stop-color" dur="4s" repeatCount="indefinite" values="#2196f3;#ffffff;#2196f3" /></stop>
+            </linearGradient>
+          </defs>
+          <path
+            fill="url(#swirlGradient)"
+            d="M20.888 8.179c9.368-1.838 17.46-.259 18.075 3.527.348 2.147-1.785 4.541-5.406 6.548.296.53.426 1.297.333 2.32-.243 2.655-2.834 5.765-10.38 6.642-2.604.303-5.067.298-7.188.039.407 1.751 2.194 2.83 5.113 2.562 2.09-.192 3.903-.85 4.99-1.71.546 1.498-2.203 3.554-4.933 3.594-1.9.028-3.63-.479-4.86-1.337 1.176 3.113 3.961 3.466 5.249 3.6-.102.563-2.288 1.343-4.375-.227-1.676-1.26-1.682-3.04-1.461-3.842-.555-.514-.956-1.117-1.154-1.783-.083-.276-.125-.863-.12-1.104-3.176-.633-5.293-1.913-5.462-3.604-.048-.48.065-.964.318-1.442-2.617-.71-4.32-1.944-4.59-3.602-.614-3.785 6.482-8.344 15.85-10.181Zm9.698 11.494c-2.21.91-4.745 1.679-7.474 2.214-4.46.874-8.63.974-11.842.43-.04.176-.04.358-.047.581-.063 2.151 3.946 3.393 10.364 2.545 6.418-.848 9.52-2.942 9.28-5.078a1.438 1.438 0 0 0-.281-.692Zm3.7-7.188c-.41-1.986-5.812-3.218-13.447-1.36-7.636 1.859-13.494 4.976-13.083 6.962.41 1.986 6.933 2.09 14.568.23 7.635-1.858 12.372-3.845 11.962-5.832Z"
+            style="transform-origin: 50% 90%; animation: bounce 2s cubic-bezier(0.33, 0.66, 0.8, 0.64) infinite"
+          />
+          <style>
+            @keyframes bounce {
+              0%,
+              52%,
+              to {
+                transform: translateY(0) scaleY(1) scaleX(1);
+              }
+              10% {
+                transform: translateY(-8px) scaleY(0.98) scaleX(1.02);
+              }
+              30% {
+                transform: translateY(-10px) scaleY(0.9) scaleX(1.18);
+              }
+              42% {
+                transform: translateY(0) scaleY(1.12) scaleX(0.8);
+              }
+              48% {
+                transform: translateY(-7px) scaleY(0.96) scaleX(1.04);
+              }
+            }
+          </style>
+        </svg>
+        <p class="loading-message" aria-live="polite">Loading, please wait…</p>
+      </section>
+    </aside>
+
+    <aside class="info-dialog is-hidden">
+      <button data-sidebar-close class="info-dialog__close">
+        <svg xmlns="http://www.w3.org/2000/svg" width="8" height="8" fill="none" viewBox="0 0 8 8">
+          <path
+            fill="#222"
+            d="m.158 6.55 2.813-2.812L.18.95a.513.513 0 0 1 0-.773.513.513 0 0 1 .774 0l2.813 2.789L6.557.175a.513.513 0 0 1 .773 0c.234.212.234.563 0 .798L4.541 3.762l2.79 2.789c.233.21.233.562 0 .797-.212.21-.563.21-.798 0L3.744 4.535.955 7.325c-.21.234-.562.234-.797 0a.55.55 0 0 1 0-.774"
+          />
+        </svg>
+        Close
+        <svg class="info-dialog__close-icon" xmlns="http://www.w3.org/2000/svg" width="7" height="11" fill="none">
+          <path fill="#222" d="M5.783 4.729a.723.723 0 0 1 0 1.054l-4.5 4.5a.723.723 0 0 1-1.054 0 .723.723 0 0 1 0-1.054l3.96-3.985-3.96-3.96a.723.723 0 0 1 0-1.055.723.723 0 0 1 1.054 0l4.5 4.5Z" />
+        </svg>
+      </button>
+      <header class="info-dialog__header">
+        <h3 class="info-dialog__title">
+          <img src="images/icon-info.svg" alt="layer icon" />
+          About this data
+        </h3>
+        <select name="" id="">
+          <option value="">Wind</option>
+          <option value="">Pressure</option>
+        </select>
+      </header>
+      <div class="copy">
+        <section class="info-dialog__data">
+          <ul>
+            <li>Forecast model: GFS 10km</li>
+            <li>Provider: NOAA</li>
+          </ul>
+        </section>
+        <section>
+          <h3>Swell - Wave Height</h3>
+          <p>Wave height forecasts show predicted total wave heights, combining wind waves and swell. This information is crucial for marine safety and coastal activities.</p>
+        </section>
+        <section>
+          <h3>Swell - Wave Height</h3>
+          <p>Wave height forecasts show predicted total wave heights, combining wind waves and swell. This information is crucial for marine safety and coastal activities.</p>
+        </section>
+      </div>
+    </aside>
+
+    <aside class="dialog__overlay is-hidden">
+      <div class="dialog" tabindex="-1" role="dialog">
+        <header class="dialog__header">
+          <h3 class="dialog__title">About this data</h3>
+          <button type="button" class="dialog__close" data-dismiss="dialog" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </header>
+        <div class="dialog__body">
+          <section>
+            <ul>
+              <li>Forecast model: ACCESS-G3 12km</li>
+              <li>Provider: BOM</li>
+            </ul>
+          </section>
+          <section>
+            <h3>Wind</h3>
+            <p>Average wind speed 10 meters above the surface (or at selected pressure level). <strong>Actual wind </strong>at the ground is influenced by many factors like mountains, cities, convective clouds and thermal effects.</p>
+          </section>
+          <section>
+            <h3>ACCESS-G3 12km</h3>
+            <p>
+              Australian Community Climate and Earth-System Simulator (ACCESS). Based upon the <strong>UK Met Office Unified Model system.</strong> ACCESS G3 is the global numerical forecast model operated by the BoM. It is run four times daily and provides forecast data out to 240 hours with a
+              horizontal resolution of approximately 12km and 70 vertical levels.
+            </p>
+          </section>
+        </div>
+      </div>
+    </aside>
+
+    <aside class="data-notification">
+      <h3>Wind data not visible</h3>
+      <p>The BOM wind model is no longer visible, the NOAA global wind model is available, would you like to load it?</p>
+      <div class="button-group">
+        <button class="button button--primary">Yes</button>
+        <button class="button">No</button>
+      </div>
+    </aside>
+
+    <script>
+      document.addEventListener('DOMContentLoaded', function () {
+        const sidebar = document.querySelector('[data-sidebar]');
+        const sidebarBackdrop = document.querySelector('[data-sidebar-backdrop]');
+        const toggleButton = document.querySelector('[data-sidebar-toggle]');
+
+        // 1. Toggle sidebar visibility
+        if (toggleButton) {
+          toggleButton.addEventListener('click', function () {
+            sidebar.classList.toggle('is-shown');
+            sidebarBackdrop.classList.toggle('is-hidden');
+          });
+        }
+
+        // 2. Clicking backdrop toggles visibility
+        if (sidebarBackdrop) {
+          sidebarBackdrop.addEventListener('click', function () {
+            sidebar.classList.toggle('is-shown');
+            sidebarBackdrop.classList.toggle('is-hidden');
+          });
+        }
+
+        // 3. Expand a layer item when clicking data-layer-expand
+        document.addEventListener('click', function (e) {
+          const expandBtn = e.target.closest('[data-layer-expand]');
+          if (expandBtn) {
+            const listItem = expandBtn.closest('[data-list-item]');
+            if (listItem) {
+              listItem.classList.toggle('is-expanded');
+              e.preventDefault();
+            }
+          }
+        });
+      });
+
+      document.addEventListener('click', function (event) {
+        const dismissBtn = event.target.closest('[data-dismiss="dialog"]');
+        if (!dismissBtn) return;
+
+        // Find the closest dialog overlay and add is-hidden class
+        const dialogOverlay = dismissBtn.closest('.dialog__overlay');
+        if (dialogOverlay) {
+          dialogOverlay.classList.add('is-hidden');
+        }
+      });
+
+      // Tippy initial script
+      document.addEventListener('DOMContentLoaded', () => {
+        const template = document.querySelector('#tooltip-content');
+        tippy('[data-info]', {
+          content: template.innerHTML,
+          allowHTML: true, // Enable HTML content
+          trigger: 'click', // Show on click
+          interactive: true, // Allow user to interact with content
+          placement: 'auto', // top, bottom, left, right
+          theme: 'custom-html', // Use custom theme
+          animation: 'scale', // Animation style
+          arrow: true,
+          hideOnClick: true // Hide when clicking outside
+        });
+      });
+
+      document.addEventListener('DOMContentLoaded', () => {
+        const mobilePanel = document.querySelector('[data-mobile-panels]');
+        const mobilePanelOpen = document.querySelector('[data-open-mobile-panels]');
+        const mobilePanelClose = document.querySelector('[data-close-mobile-panels]');
+
+        if (mobilePanel && mobilePanelOpen) {
+          mobilePanelOpen.addEventListener('click', () => {
+            mobilePanel.classList.toggle('is-visible');
+          });
+        }
+
+        if (mobilePanel && mobilePanelClose) {
+          mobilePanelClose.addEventListener('click', () => {
+            mobilePanel.classList.toggle('is-visible');
+          });
+        }
+      });
+
+      document.addEventListener('DOMContentLoaded', () => {
+        const mapPoint = document.querySelector('.map-point');
+        const closeBtn = mapPoint?.querySelector('.map-point__close');
+
+        if (closeBtn) {
+          closeBtn.addEventListener('click', e => {
+            e.stopPropagation(); // prevent bubbling
+            mapPoint.style.animation = 'none'; // reset animation
+            mapPoint.style.opacity = '0';
+            mapPoint.style.transform = 'scale(0.9) translateY(-10px)';
+
+            // remove after fade
+            setTimeout(() => {
+              mapPoint.remove();
+            }, 200);
+          });
+        }
+      });
+    </script>
+  </body>
+</html>
